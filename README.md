@@ -1,21 +1,24 @@
 #include <Adafruit_Fingerprint.h>
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(2, 3); // RX, TX
+SoftwareSerial mySerial(2, 3);
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
-const int ledPin = 8; // Pin for the LED
+const int ledPin = 8; // Pin for LED indicator
+const int baudRate = 57600;
 
 void setup() {
     pinMode(ledPin, OUTPUT);
     Serial.begin(9600);
-    while (!Serial); // Wait for serial port to connect
-
+    
+    // For Yun/Leo/Micro/Zero/...
+    while (!Serial) { delay(1); }
+    
     delay(100);
     Serial.println("\n\nAdafruit Fingerprint Sensor Test");
-    
+
     // Set the data rate for the sensor serial port
-    finger.begin(57600);
+    finger.begin(baudRate);
     
     if (finger.verifyPassword()) {
         Serial.println("Found fingerprint sensor!");
@@ -25,19 +28,20 @@ void setup() {
     }
 
     finger.getTemplateCount();
-    Serial.print("Sensor contains ");
-    Serial.print(finger.templateCount);
+    Serial.print("Sensor contains "); 
+    Serial.print(finger.templateCount); 
     Serial.println(" templates");
     Serial.println("Waiting for valid finger...");
 }
 
 void loop() {
     getFingerprintIDez();
-    delay(50); // Don't need to run this at full speed
+    delay(50); // Don't need to run this at full speed.
 }
 
 uint8_t getFingerprintID() {
     uint8_t p = finger.getImage();
+    
     switch (p) {
         case FINGERPRINT_OK:
             Serial.println("Image taken");
@@ -58,6 +62,7 @@ uint8_t getFingerprintID() {
 
     // OK success!
     p = finger.image2Tz();
+    
     switch (p) {
         case FINGERPRINT_OK:
             Serial.println("Image converted");
@@ -79,6 +84,7 @@ uint8_t getFingerprintID() {
 
     // OK converted!
     p = finger.fingerFastSearch();
+    
     if (p == FINGERPRINT_OK) {
         Serial.println("Found a print match!");
     } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
@@ -93,9 +99,9 @@ uint8_t getFingerprintID() {
     }
 
     // Found a match!
-    Serial.print("Found ID #");
-    Serial.print(finger.fingerID);
-    Serial.print(" with confidence of ");
+    Serial.print("Found ID #"); 
+    Serial.print(finger.fingerID); 
+    Serial.print(" with confidence of "); 
     Serial.println(finger.confidence);
     return finger.fingerID;
 }
@@ -116,9 +122,9 @@ int getFingerprintIDez() {
     delay(1500);
     digitalWrite(ledPin, LOW);
 
-    Serial.print("Found ID #");
-    Serial.print(finger.fingerID);
-    Serial.print(" with confidence of ");
+    Serial.print("Found ID #"); 
+    Serial.print(finger.fingerID); 
+    Serial.print(" with confidence of "); 
     Serial.println(finger.confidence);
     return finger.fingerID;
 }
